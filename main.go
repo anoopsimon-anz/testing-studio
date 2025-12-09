@@ -1151,7 +1151,6 @@ func handleFlowDiagram(w http.ResponseWriter, r *http.Request) {
                 <div class="box-desc">
                     AMP generates customer communication events (email opens, clicks, campaign responses) and
                     <span class="highlight">publishes them to EventMesh</span> for downstream processing.
-                    <br><br><em style="color: #666;">* External system - not available in test environment</em>
                 </div>
             </div>
             <div class="arrow-right">→</div>
@@ -1216,7 +1215,6 @@ func handleFlowDiagram(w http.ResponseWriter, r *http.Request) {
                 <div class="box-desc">
                     CloudEvents are automatically <span class="highlight">streamed from PubSub to BigQuery</span> tables
                     on Google Cloud Platform. This data powers reporting dashboards and business intelligence analytics.
-                    <br><br><em style="color: #666;">* External system - not available in test environment</em>
                 </div>
             </div>
             <div class="arrow-right">→</div>

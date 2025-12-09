@@ -1032,40 +1032,45 @@ func handleFlowDiagram(w http.ResponseWriter, r *http.Request) {
         }
         .message-flow {
             position: absolute;
-            width: 60px;
-            height: 40px;
             background: #1a73e8;
             border: 2px solid #000;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 10px;
+            font-size: 9px;
             font-weight: bold;
             color: white;
+            font-family: 'Courier New', monospace;
+            padding: 8px;
+            border-radius: 4px;
         }
         .message-incoming {
-            animation: moveIncoming 3s infinite;
-            left: -100px;
+            animation: moveIncoming 5s infinite;
+            left: -120px;
             top: 30%;
+            width: 80px;
+            height: 50px;
         }
         @keyframes moveIncoming {
-            0% { left: -100px; opacity: 1; }
-            45% { left: 50%; transform: translateX(-50%) scale(1); }
-            50% { left: 50%; transform: translateX(-50%) scale(0.5); opacity: 0.5; }
-            55% { left: 50%; transform: translateX(-50%) scale(0); opacity: 0; }
+            0% { left: -120px; opacity: 1; }
+            35% { left: 50%; transform: translateX(-50%) scale(1); }
+            40% { left: 50%; transform: translateX(-50%) scale(0.7); opacity: 0.7; }
+            45% { left: 50%; transform: translateX(-50%) scale(0); opacity: 0; }
             100% { left: 50%; transform: translateX(-50%) scale(0); opacity: 0; }
         }
         .message-outgoing {
-            animation: moveOutgoing 3s infinite;
-            right: -100px;
+            animation: moveOutgoing 5s infinite;
+            right: -120px;
             bottom: 30%;
             background: #188038;
+            width: 70px;
+            height: 50px;
         }
         @keyframes moveOutgoing {
-            0%, 55% { right: -100px; opacity: 0; transform: scale(0); }
-            60% { right: 50%; transform: translateX(50%) scale(0.5); opacity: 0.5; }
-            65% { right: 50%; transform: translateX(50%) scale(1); opacity: 1; }
-            100% { right: -100px; opacity: 1; }
+            0%, 45% { right: -120px; opacity: 0; transform: scale(0); }
+            50% { right: 50%; transform: translateX(50%) scale(0.7); opacity: 0.7; }
+            55% { right: 50%; transform: translateX(50%) scale(1); opacity: 1; }
+            100% { right: -120px; opacity: 1; }
         }
         .status-text {
             position: absolute;
@@ -1075,11 +1080,11 @@ func handleFlowDiagram(w http.ResponseWriter, r *http.Request) {
             font-size: 14px;
             font-weight: bold;
             text-align: center;
-            animation: statusBlink 3s infinite;
+            animation: statusBlink 5s infinite;
         }
         @keyframes statusBlink {
-            0%, 45% { opacity: 0; }
-            50%, 95% { opacity: 1; }
+            0%, 35% { opacity: 0; }
+            40%, 90% { opacity: 1; }
             100% { opacity: 0; }
         }
         .label-kafka {
@@ -1341,9 +1346,9 @@ func handleFlowDiagram(w http.ResponseWriter, r *http.Request) {
 
             <div class="animation-scene">
                 <div class="label-kafka">
-                    <div>📡</div>
-                    <div>KAFKA</div>
-                    <div style="font-size: 10px;">Topic</div>
+                    <div>📬</div>
+                    <div>UNICA</div>
+                    <div style="font-size: 10px;">Marketing Events</div>
                 </div>
 
                 <div class="event-handler-worker">
@@ -1359,8 +1364,8 @@ func handleFlowDiagram(w http.ResponseWriter, r *http.Request) {
                     </div>
                 </div>
 
-                <div class="message-flow message-incoming">MSG</div>
-                <div class="message-flow message-outgoing">WF</div>
+                <div class="message-flow message-incoming" style="line-height: 1.2;">{...}<br>Avro<br>Event</div>
+                <div class="message-flow message-outgoing" style="line-height: 1.3;">⚙️<br>WF<br>Trigger</div>
 
                 <div class="label-temporal">
                     <div>⚙️</div>
@@ -1368,16 +1373,16 @@ func handleFlowDiagram(w http.ResponseWriter, r *http.Request) {
                     <div style="font-size: 10px;">Workflow</div>
                 </div>
 
-                <div class="status-text">⚡ Processing Message → Triggering Workflow</div>
+                <div class="status-text">⚡ Processing Avro Event → Triggering Workflow</div>
             </div>
 
             <div style="margin-top: 20px; padding: 15px; background: #f5f5f5; border-left: 3px solid #000;">
                 <strong>What's happening:</strong>
                 <ul style="margin: 10px 0 0 20px; font-size: 13px; line-height: 1.8;">
-                    <li><strong>Blue box (MSG)</strong>: Marketing event arriving from Kafka</li>
+                    <li><strong>Blue box ({...} Avro Event)</strong>: Marketing event arriving from Unica topic in Avro format</li>
                     <li><strong>Worker</strong>: Event Handler consuming the message (arms waving = working!)</li>
-                    <li><strong>Green box (WF)</strong>: Temporal workflow being triggered</li>
-                    <li><strong>Continuous cycle</strong>: This happens 24x7, never stops!</li>
+                    <li><strong>Green box (⚙️ WF Trigger)</strong>: Temporal workflow being triggered with workflow icon</li>
+                    <li><strong>Continuous cycle</strong>: This happens 24x7, never stops! (5-second cycle for visibility)</li>
                 </ul>
             </div>
         </div>

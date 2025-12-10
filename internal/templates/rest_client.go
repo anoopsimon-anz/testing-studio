@@ -7,7 +7,7 @@ const RestClient = `
 		</div>
 		<div class="panel-body">
 			<div class="form-row">
-				<div class="form-group" style="grid-column: 1 / -1;">
+				<div class="form-group" style="max-width: 200px;">
 					<label>Environment</label>
 					<select id="envSelect" onchange="loadEnvironment()">
 						<option value="">No Environment</option>
@@ -15,10 +15,10 @@ const RestClient = `
 				</div>
 			</div>
 
-			<div class="form-row">
-				<div class="form-group" style="flex: 0 0 120px;">
+			<div class="form-row" style="gap: 8px;">
+				<div class="form-group" style="width: 110px; min-width: 110px;">
 					<label>Method</label>
-					<select id="httpMethod" onchange="toggleBodyField()">
+					<select id="httpMethod" onchange="toggleBodyField()" style="width: 100%;">
 						<option value="GET">GET</option>
 						<option value="POST">POST</option>
 						<option value="PUT">PUT</option>

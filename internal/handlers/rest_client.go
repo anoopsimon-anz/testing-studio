@@ -72,11 +72,16 @@ func HandleRestSend(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// Use custom transport with proper DNS resolution
+	transport := &http.Transport{
+		TLSClientConfig: tlsConfig,
+		// Force use of system DNS resolver
+		DisableKeepAlives: false,
+	}
+
 	client := &http.Client{
-		Timeout: 30 * time.Second,
-		Transport: &http.Transport{
-			TLSClientConfig: tlsConfig,
-		},
+		Timeout:   30 * time.Second,
+		Transport: transport,
 	}
 
 	// Prepare request body

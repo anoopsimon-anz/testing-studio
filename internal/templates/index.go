@@ -37,9 +37,9 @@ const Index = `<!DOCTYPE html>
         }
         .options {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-            margin-top: 32px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-top: 48px;
         }
         .option-card {
             background: white;

@@ -21,6 +21,7 @@ func main() {
 	http.HandleFunc("/rest-client", handlers.HandleRestClient)
 	http.HandleFunc("/flow-diagram", handlers.HandleFlowDiagram)
 	http.HandleFunc("/gcs", handlers.HandleGCS)
+	http.HandleFunc("/trace-journey", handlers.HandleTraceJourney)
 
 	// Register API handlers
 	http.HandleFunc("/api/configs", handlers.HandleGetConfigs)
@@ -36,6 +37,7 @@ func main() {
 	http.HandleFunc("/api/gcs/objects", handlers.HandleListObjects)
 	http.HandleFunc("/api/gcs/object/content", handlers.HandleGetObjectContent)
 	http.HandleFunc("/api/gcs/object/download", handlers.HandleDownloadObject)
+	http.HandleFunc("/api/trace/search", handlers.HandleTraceSearch)
 
 	port := "8888"
 	log.Printf("🚀 Testing Studio starting on http://localhost:%s", port)

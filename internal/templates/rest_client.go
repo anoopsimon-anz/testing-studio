@@ -15,7 +15,7 @@ const RestClient = `
 				</div>
 			</div>
 
-			<div class="form-row" style="gap: 8px;">
+			<div class="form-row" style="display: flex; gap: 8px; align-items: flex-end;">
 				<div class="form-group" style="width: 110px; min-width: 110px;">
 					<label>Method</label>
 					<select id="httpMethod" onchange="toggleBodyField()" style="width: 100%;">

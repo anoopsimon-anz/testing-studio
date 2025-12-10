@@ -9,8 +9,8 @@ const Index = `<!DOCTYPE html>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
-            background: #f5f5f5;
+            font-family: 'Google Sans', 'Product Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
+            background: #fafafa;
             color: #202124;
             min-height: 100vh;
             display: flex;

@@ -126,6 +126,54 @@ const Index = `<!DOCTYPE html>
         .status-dot.red {
             background: #ea4335;
         }
+        .tools-wrapper {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 50;
+        }
+        .tools-btn {
+            background: white;
+            border: 1px solid #dadce0;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            color: #5f6368;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .tools-btn:hover {
+            background: #f8f9fa;
+            border-color: #dadce0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .tools-menu {
+            display: none;
+            position: absolute;
+            left: 0;
+            top: 48px;
+            background: white;
+            border: 1px solid #dadce0;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            min-width: 200px;
+            overflow: hidden;
+        }
+        .tools-menu a {
+            display: block;
+            padding: 12px 16px;
+            color: #202124;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+        .tools-menu a:hover {
+            background: #f8f9fa;
+        }
+        .tools-menu a:not(:last-child) {
+            border-bottom: 1px solid #e8eaed;
+        }
     </style>
 </head>
 <body>

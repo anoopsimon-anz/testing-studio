@@ -20,6 +20,7 @@ func main() {
 	http.HandleFunc("/kafka", handlers.HandleKafka)
 	http.HandleFunc("/rest-client", handlers.HandleRestClient)
 	http.HandleFunc("/flow-diagram", handlers.HandleFlowDiagram)
+	http.HandleFunc("/gcs", handlers.HandleGCS)
 
 	// Register API handlers
 	http.HandleFunc("/api/configs", handlers.HandleGetConfigs)
@@ -31,6 +32,10 @@ func main() {
 	http.HandleFunc("/api/rest/send", handlers.HandleRestSend)
 	http.HandleFunc("/api/docker/status", handlers.HandleDockerStatus)
 	http.HandleFunc("/api/gcloud/status", handlers.HandleGCloudStatus)
+	http.HandleFunc("/api/gcs/buckets", handlers.HandleListBuckets)
+	http.HandleFunc("/api/gcs/objects", handlers.HandleListObjects)
+	http.HandleFunc("/api/gcs/object/content", handlers.HandleGetObjectContent)
+	http.HandleFunc("/api/gcs/object/download", handlers.HandleDownloadObject)
 
 	port := "8888"
 	log.Printf("🚀 Testing Studio starting on http://localhost:%s", port)

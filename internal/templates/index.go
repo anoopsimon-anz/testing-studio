@@ -24,15 +24,16 @@ const Index = `<!DOCTYPE html>
             margin-bottom: 64px;
         }
         h1 {
-            font-size: 32px;
+            font-size: 48px;
             color: #202124;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
             font-weight: 400;
+            letter-spacing: -0.5px;
         }
         .subtitle {
-            font-size: 16px;
+            font-size: 15px;
             color: #5f6368;
-            margin-bottom: 48px;
+            font-weight: 400;
         }
         .options {
             display: grid;

@@ -55,9 +55,24 @@ const Index = `<!DOCTYPE html>
             position: relative;
             overflow: hidden;
         }
+        .option-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #4285f4, #34a853, #fbbc04, #ea4335);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
         .option-card:hover {
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            border-color: #1a73e8;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            border-color: #dadce0;
+        }
+        .option-card:hover::before {
+            opacity: 1;
         }
         .option-title {
             font-size: 20px;

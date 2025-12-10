@@ -108,6 +108,12 @@ const Index = `<!DOCTYPE html>
                 <div class="option-desc">Consume Avro messages from Kafka topics</div>
                 <span class="badge">Avro Schema</span>
             </a>
+
+            <a href="/rest-client" class="option-card">
+                <div class="option-title">REST Client</div>
+                <div class="option-desc">Send HTTP requests with custom headers, body, and TLS certificates</div>
+                <span class="badge">API Testing</span>
+            </a>
         </div>
     </div>
 

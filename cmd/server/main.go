@@ -18,6 +18,7 @@ func main() {
 	http.HandleFunc("/", handlers.HandleIndex)
 	http.HandleFunc("/pubsub", handlers.HandlePubSub)
 	http.HandleFunc("/kafka", handlers.HandleKafka)
+	http.HandleFunc("/rest-client", handlers.HandleRestClient)
 	http.HandleFunc("/flow-diagram", handlers.HandleFlowDiagram)
 
 	// Register API handlers
@@ -27,6 +28,7 @@ func main() {
 	http.HandleFunc("/api/pubsub/pull", handlers.HandlePullPubSub)
 	http.HandleFunc("/api/kafka/pull", handlers.HandlePullKafka)
 	http.HandleFunc("/api/kafka/publish", handlers.HandlePublishKafka)
+	http.HandleFunc("/api/rest/send", handlers.HandleRestSend)
 
 	port := "8888"
 	log.Printf("🚀 Testing Studio starting on http://localhost:%s", port)

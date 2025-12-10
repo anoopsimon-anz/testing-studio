@@ -22,9 +22,11 @@ func main() {
 	http.HandleFunc("/flow-diagram", handlers.HandleFlowDiagram)
 	http.HandleFunc("/gcs", handlers.HandleGCS)
 	http.HandleFunc("/trace-journey", handlers.HandleTraceJourney)
+	http.HandleFunc("/config-editor", handlers.HandleConfigEditor)
 
 	// Register API handlers
 	http.HandleFunc("/api/configs", handlers.HandleGetConfigs)
+	http.HandleFunc("/api/configs/save", handlers.HandleSaveAllConfigs)
 	http.HandleFunc("/api/pubsub/configs", handlers.HandleSavePubSubConfig)
 	http.HandleFunc("/api/kafka/configs", handlers.HandleSaveKafkaConfig)
 	http.HandleFunc("/api/pubsub/pull", handlers.HandlePullPubSub)

@@ -400,7 +400,8 @@ const FlowDiagram = `<!DOCTYPE html>
                 </div>
             </div>
             <div class="arrow-right">→</div>
-            <div class="box" style="cursor: pointer;" onclick="showEventHandlerAnimation()">
+            <div class="box" style="cursor: pointer; position: relative;" onclick="showEventHandlerAnimation()">
+                <div style="position: absolute; top: 12px; right: 12px; font-size: 24px; opacity: 0.3;">⚙️</div>
                 <div class="step-number">3</div>
                 <div class="box-title">TMS Event Handler (24x7 Service) <span style="font-size: 12px; color: #1a73e8;">▶ Click to see animation</span></div>
                 <div class="box-desc">

@@ -75,7 +75,7 @@ const Index = `<!DOCTYPE html>
             opacity: 1;
         }
         .option-title {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 500;
             color: #202124;
             margin-bottom: 8px;
@@ -83,7 +83,8 @@ const Index = `<!DOCTYPE html>
         .option-desc {
             font-size: 14px;
             color: #5f6368;
-            line-height: 1.5;
+            line-height: 1.6;
+            flex: 1;
         }
         .badge {
             display: inline-block;

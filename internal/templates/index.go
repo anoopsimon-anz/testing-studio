@@ -13,9 +13,7 @@ const Index = `<!DOCTYPE html>
             background: #fafafa;
             color: #202124;
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            padding: 80px 24px 24px 24px;
         }
         .landing {
             text-align: center;

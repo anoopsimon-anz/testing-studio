@@ -16,9 +16,12 @@ const Index = `<!DOCTYPE html>
             padding: 80px 24px 24px 24px;
         }
         .landing {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .hero {
             text-align: center;
-            max-width: 800px;
-            padding: 40px;
+            margin-bottom: 64px;
         }
         h1 {
             font-size: 32px;

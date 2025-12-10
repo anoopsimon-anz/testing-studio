@@ -1,83 +1,64 @@
-# 📡 Testing Studio (CloudEvents Explorer)
+# 📡 Testing Studio
 
-A professional, modular web tool for exploring and testing Kafka and Google Cloud PubSub messages with Avro schema support, message publishing, and comprehensive flow diagrams.
+A professional web tool for testing and debugging cloud services locally including Google Cloud PubSub, Kafka/EventMesh, REST APIs, and Google Cloud Storage.
 
-![Version](https://img.shields.io/badge/version-2.0.0-blue)
+![Version](https://img.shields.io/badge/version-3.0.0-blue)
 ![Go](https://img.shields.io/badge/go-1.21+-00ADD8?logo=go)
-![Architecture](https://img.shields.io/badge/architecture-modular-green)
 
 ## ✨ Features
 
-### 🎨 Redpanda-Inspired Dark Mode UI
-- Beautiful GitHub dark theme color scheme
-- Clean, professional interface
-- Responsive design that works on any screen
+### 📦 GCS Browser
+- Browse Google Cloud Storage buckets and objects
+- Preview file contents directly in browser
+- Download files with one click
+- Folder navigation with breadcrumbs
+- Works with fake-gcs-server for local development
 
-### 📬 Message Management
-- **Pull messages** from PubSub subscriptions
-- **Persistent storage** - messages stay in memory across pulls
-- **Collapsible cards** - each message starts collapsed for easy scanning
-- **Expand to view** - click any message to see full details
+### 📬 Google PubSub Explorer
+- Pull messages from PubSub subscriptions
+- View CloudEvents with syntax-highlighted JSON
+- Collapsible message cards for easy scanning
+- Works with PubSub emulator (bypasses proxy issues on macOS)
 
-### 🌈 Syntax-Highlighted JSON
-- Color-coded JSON viewer
-- Keys, strings, numbers, booleans, and null values all highlighted
-- Pretty-printed with proper indentation
-- Easy to read and understand complex payloads
+### 🌊 Kafka / EventMesh Browser
+- Consume Avro messages from Kafka topics
+- Automatic schema registry integration
+- Publish test events to topics
+- Message filtering and search
 
-### 💾 Configuration Management
-- Save multiple PubSub configurations
-- Quick dropdown switching between configs
-- Stored in JSON for easy editing
-- Pre-configured for TMS local development
+### 🔌 REST Client
+- Send HTTP requests with custom headers
+- Support for TLS client certificates
+- Request/response viewer
+- Perfect for testing internal APIs
 
-### 📊 Real-Time Stats
-- Total message count
-- Last updated timestamp
-- Live updates as you pull messages
+### 📊 Flow Diagram Tool
+- Visualize message flows
+- Base64 encoder/decoder
+
+### 🔍 Status Indicators
+- Docker status monitoring
+- GCloud authentication status with last login time
+- Real-time updates
 
 ## 🚀 Quick Start
 
-### Docker (Recommended - connects to devstack)
-
 ```bash
 cd ~/scratches/cloudevents-explorer
 
-# Start the application (builds if needed)
-make start
-
-# View logs
-make logs
-
-# Stop the application
-make stop
-```
-
-Open http://localhost:8888 in your browser.
-
-**Note**: When running in Docker, use the "Docker" configurations which connect to `dep_redpanda` and `dep_pubsub` services in the devstack network.
-
-### Local Development (without Docker)
-
-```bash
-cd ~/scratches/cloudevents-explorer
-
-# Option 1: Use the quick start script
-./start.sh
-
-# Option 2: Run directly
+# Run directly
 go run cmd/server/main.go
 
-# Option 3: Build and run
+# Or build and run
 go build -o testing-studio cmd/server/main.go
 ./testing-studio
 ```
 
-**Note**: When running locally, use the "Local" configurations which connect to `localhost:9092` and `localhost:8086`.
+Open **http://localhost:8888** in your browser.
 
 ## 🏗️ Architecture
 
-This project has been refactored from a monolithic `main.go` into a clean, maintainable modular architecture:
+Clean, modular architecture for maintainability:
 
 ```
 testing-studio/
@@ -85,262 +66,217 @@ testing-studio/
 ├── internal/
 │   ├── config/                 # Configuration management
 │   ├── handlers/               # HTTP request handlers
-│   ├── kafka/                  # Kafka operations (pull, publish, Avro)
+│   │   ├── gcs.go             # GCS Browser handlers
+│   │   ├── pubsub.go          # PubSub handlers
+│   │   ├── kafka.go           # Kafka handlers
+│   │   ├── rest_client.go     # REST client handlers
+│   │   ├── docker_status.go   # Docker status checker
+│   │   └── gcloud_status.go   # GCloud auth checker
+│   ├── kafka/                  # Kafka operations
 │   ├── pubsub/                 # PubSub operations
-│   ├── templates/              # HTML templates and UI
-│   └── types/                  # Shared data structures
+│   ├── templates/              # HTML templates
+│   └── types/                  # Shared types
 ├── go.mod
 └── README.md
 ```
 
-For detailed architecture documentation, see [ARCHITECTURE.md](ARCHITECTURE.md).
+## 📖 Usage Guide
+
+### GCS Browser
+1. Navigate to **http://localhost:8888/gcs**
+2. Select a bucket from the sidebar
+3. Browse folders and files
+4. Click **Preview** to view file contents
+5. Click **Download** to save files locally
+
+**Local Development**: Configure fake-gcs-server on `localhost:4443`
+
+### PubSub Explorer
+1. Navigate to **http://localhost:8888/pubsub**
+2. Configure connection settings:
+   - **Emulator Host**: `localhost:8086`
+   - **Project ID**: `tms-suncorp-local`
+   - **Subscription ID**: `cloudevents.subscription`
+3. Click **Pull Messages**
+4. Expand messages to view details
+
+### Kafka Browser
+1. Navigate to **http://localhost:8888/kafka**
+2. Configure Kafka settings:
+   - **Bootstrap Servers**: `localhost:19092`
+   - **Schema Registry**: `http://localhost:8081`
+   - **Topic**: Select from dropdown
+3. Click **Pull Messages** to consume
+4. Use **Publish** tab to send test events
+
+### REST Client
+1. Navigate to **http://localhost:8888/rest-client**
+2. Enter request details:
+   - Method (GET, POST, PUT, DELETE)
+   - URL
+   - Headers (one per line, format: `Key: Value`)
+   - Request body (for POST/PUT)
+3. Optionally configure TLS client certificate
+4. Click **Send Request**
 
 ## 🎯 Why This Tool?
 
 ### The Problem
-Working with PubSub emulator on macOS with corporate proxies causes HTTP/2 errors:
-
-```bash
-# This fails on macOS:
-curl localhost:8086/v1/projects/.../pull
-# Error: RST_STREAM closed stream. HTTP/2 error code: PROTOCOL_ERROR
-```
-
-**Root cause:** Corporate proxy (`localhost:3128`) intercepts localhost connections and adds headers that break the PubSub emulator.
+Working with local cloud service emulators on macOS with corporate proxies causes issues:
+- HTTP/2 errors with PubSub emulator
+- Kafka connection failures
+- TLS certificate complexity for internal APIs
+- No easy way to browse GCS buckets locally
 
 ### The Solution
-CloudEvents Explorer uses the native Google PubSub Go SDK, completely bypassing HTTP/proxy layers. No more errors! 🎉
+Testing Studio provides native Go SDK integration for all services, bypassing proxy/HTTP issues:
+- **PubSub**: Uses native gRPC SDK
+- **Kafka**: Direct Kafka protocol connection
+- **GCS**: Direct HTTP API access to fake-gcs-server
+- **REST**: Built-in HTTP client with TLS support
 
-## 📖 Usage Guide
+## 🔧 Local Development Setup
 
-### 1. Connection Settings
+### Prerequisites
+- Go 1.21 or higher
+- (Optional) PubSub emulator running on `localhost:8086`
+- (Optional) Kafka/Redpanda running on `localhost:19092`
+- (Optional) fake-gcs-server running on `localhost:4443`
 
-Select from saved configurations or create new ones:
+### Running Services
 
-- **Configuration Name**: Friendly name (e.g., "TMS Local")
-- **Emulator Host**: `localhost:8086` (for local emulator)
-- **Project ID**: `tms-suncorp-local`
-- **Subscription ID**: `cloudevents.subscription`
-- **Max Messages**: How many to pull (1-100)
+**PubSub Emulator**:
+```bash
+gcloud beta emulators pubsub start --project=tms-suncorp-local --host-port=localhost:8086
+```
 
-### 2. Pull Messages
+**Kafka (via Redpanda)**:
+```bash
+# See your TMS devstack setup
+make devstack.start
+```
 
-Click **▶ Pull Messages** to fetch new messages. They'll be added to the top of the list and persisted in memory.
+**fake-gcs-server**:
+```bash
+docker run -d --name gcs \
+  -p 4443:4443 \
+  fsouza/fake-gcs-server -scheme http -port 4443
+```
 
-### 3. View Message Details
+## 📂 Configuration
 
-Each message shows:
-- **Type**: CloudEvent type (e.g., `anzx.migration.tms.v1alpha1.migration.phase.completed`)
-- **Subject**: Migration subject (e.g., `migrations/4015648042`)
-- **Source**: Event source
-- **Schema**: Proto schema reference
-- **Timestamp**: When the message was published
-- **JSON Payload**: Syntax-highlighted, expandable data
-
-### 4. Expand/Collapse Messages
-
-- Messages start **collapsed** for easy scanning
-- **Click any message** to expand and see full details
-- **Click again** to collapse
-
-### 5. Clear All
-
-Click **🗑 Clear All** to remove all messages from memory.
-
-## 🎨 UI Features
-
-### Redpanda-Style Design
-- **Dark theme** with GitHub color palette
-- **Top navigation bar** with tabs
-- **Panel-based layout** for organized content
-- **Syntax highlighting** for JSON (blue keys, cyan strings, etc.)
-- **Smooth animations** for expand/collapse
-
-### Message Cards
-- Collapsed by default for quick scanning
-- Shows essential info (type, subject, time) at a glance
-- Expand to see full metadata + JSON payload
-- Color-coded type badges
-
-### Status Notifications
-- Success toasts (green)
-- Error toasts (red)
-- Auto-dismiss after 3 seconds
-
-## 📂 Configuration File
-
-Saved in `configs.json`:
+Configurations are stored in `configs.json`:
 
 ```json
 {
-  "configs": [
+  "pubsub": [
     {
       "name": "TMS Local",
       "emulatorHost": "localhost:8086",
       "projectId": "tms-suncorp-local",
       "subscriptionId": "cloudevents.subscription"
     }
+  ],
+  "kafka": [
+    {
+      "name": "Local Kafka",
+      "bootstrapServers": "localhost:19092",
+      "schemaRegistry": "http://localhost:8081",
+      "topic": "cloudevents"
+    }
   ]
 }
 ```
 
-## 🔧 Use Cases
+## 🎨 Features in Detail
 
-### Debugging Workflows
-1. Trigger a Temporal workflow (e.g., WriteProfileDiaryNote)
-2. Pull messages to see published CloudEvents
-3. Expand to view phase started/completed events
-4. Inspect JSON payloads for customer data
+### GCS Browser Features
+- **Bucket listing**: See all available buckets
+- **Folder navigation**: Navigate through object prefixes
+- **File preview**: View text files, JSON, and other formats
+- **Download**: One-click file downloads
+- **Breadcrumb navigation**: Easy navigation back to parent folders
 
-### Testing Event Publishing
-1. Send an event via EventMesh
-2. Pull messages to verify it was published
-3. Check the event structure and data
-4. Confirm schema and type are correct
+### Status Indicators
+- **Docker**: Shows green when Docker daemon is running
+- **GCloud**: Shows authentication status and last login time
+- Auto-refreshes every 10-30 seconds
 
-### Monitoring Migration Events
-1. Configure for production PubSub
-2. Pull messages to monitor migrations
-3. Track phase transitions
-4. Debug issues with customer data
-
-## 🏗️ Architecture
-
-### Backend (Go)
-- **HTTP server** on port 8888
-- **PubSub SDK** for native gRPC connection
-- **In-memory storage** for message persistence
-- **JSON API** for frontend communication
-
-### Frontend (Vanilla JS)
-- **No dependencies** - pure HTML/CSS/JS
-- **Syntax highlighter** implemented from scratch
-- **Collapsible UI** with expand/collapse state
-- **Real-time updates** via fetch API
-
-### API Endpoints
-
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/` | GET | Serve HTML UI |
-| `/api/configs` | GET | Get saved configurations |
-| `/api/configs` | POST | Save a configuration |
-| `/api/pull` | POST | Pull messages from PubSub |
-| `/api/messages` | GET | Get stored messages |
-
-## 🎯 Example: Viewing CapDiary Events
-
-After triggering a Unica event → WriteProfileDiaryNote workflow:
-
-1. Open http://localhost:8888
-2. Select "TMS Local" config
-3. Click "Pull Messages"
-4. See 2 events:
-   - **MigrationPhaseStarted** (STATUS_IN_PROGRESS)
-   - **MigrationPhaseCompleted** (STATUS_COMPLETED)
-5. Click to expand and view JSON data
-6. Inspect customer ID, group ID, phase, status
+### Syntax Highlighting
+- JSON syntax highlighting for PubSub and Kafka messages
+- Color-coded keys, strings, numbers, and booleans
+- Collapsible/expandable message cards
 
 ## 🐛 Troubleshooting
 
-### Docker: Kafka/PubSub not pulling messages
-
-**Problem**: Running in Docker but Kafka or PubSub pulls return zero messages.
-
-**Solution**: Make sure you're using the **"Docker"** configurations in the UI:
-- **Kafka**: Select "Unica Events (Docker)" - connects to `dep_redpanda:9092`
-- **PubSub**: Select "TMS PubSub (Docker)" - connects to `dep_pubsub:8086`
-
-The Docker container runs on the `devstack_devstack_network` and uses Docker service names instead of `localhost`.
-
-### Local: Kafka/PubSub not pulling messages
-
-**Problem**: Running locally (`go run`) but can't connect to services.
-
-**Solution**: Use the **"Local"** configurations:
-- **Kafka**: Select "Unica Events (Local)" - connects to `localhost:19092`
-- **PubSub**: Select "TMS PubSub (Local)" - connects to `localhost:8086`
-
 ### Port 8888 already in use
-
 ```bash
-# Kill any process using port 8888
 lsof -ti:8888 | xargs kill -9
 ```
 
-### Can't connect to devstack services
+### Can't connect to PubSub emulator
+- Verify emulator is running: `curl localhost:8086`
+- Check project ID matches configuration
+- Ensure subscription exists
 
-- Check devstack is running: `docker ps | grep dep_redpanda`
-- Ensure Testing Studio container is on devstack network: `docker inspect testing-studio | grep devstack_devstack_network`
-- Verify DNS resolution: `docker exec testing-studio getent hosts dep_redpanda`
+### Can't connect to Kafka
+- Verify Redpanda/Kafka is running: `nc -zv localhost 19092`
+- Check bootstrap servers in configuration
+- Verify topic exists
 
-### Container keeps restarting
+### GCS Browser shows no buckets
+- Verify fake-gcs-server is running on `localhost:4443`
+- Create a test bucket using the GCS API
+- Check server logs for errors
 
-Check logs for errors:
-```bash
-make logs
-# or
-docker logs testing-studio
-```
-
-## 🚀 Advanced Usage
-
-### Multiple Environments
-Save configs for different environments:
-- **TMS Local** - localhost:8086
-- **Dev PubSub** - dev-pubsub-host:8086
-- **Staging** - staging-pubsub-host:8086
-
-Switch between them with the dropdown!
-
-### Filtering Messages
-Currently shows all messages. To filter:
-1. Pull all messages
-2. Use browser search (Cmd+F) to find specific types/subjects
-3. Expand matching messages
-
-### Exporting Messages
-Messages are stored client-side. To export:
-1. Open browser console
-2. Run: `copy(JSON.stringify(messagesData, null, 2))`
-3. Paste into a file
+### GCloud status shows "Not authenticated"
+- Run `gcloud auth login`
+- Verify token is not expired
+- Check `~/.config/gcloud/` directory exists
 
 ## 📝 Development
 
-### Build
+### Hot Reload
+Use `air` for development:
 ```bash
-go build -o cloudevents-explorer main.go
-./cloudevents-explorer
+go install github.com/cosmtrek/air@latest
+air
 ```
 
 ### Dependencies
-- `cloud.google.com/go/pubsub` - PubSub client
-- `google.golang.org/api/option` - API options
+```bash
+go mod download
+```
 
-### Hot Reload
-Use `air` or `fresh` for auto-reload during development.
+### Building
+```bash
+# Development build
+go build -o testing-studio cmd/server/main.go
 
-## 🎨 Color Palette
+# Production build
+go build -ldflags="-s -w" -o testing-studio cmd/server/main.go
+```
 
-GitHub Dark Theme:
-- Background: `#0d1117`
-- Panel: `#161b22`
-- Border: `#30363d`
-- Text: `#c9d1d9`
-- Accent: `#58a6ff` (blue)
-- Success: `#238636` (green)
-- Error: `#da3633` (red)
+## 🎨 UI Design
 
-## 📜 License
+- Clean, professional Google Cloud-inspired interface
+- Material Design color palette
+- Responsive layout
+- Smooth animations and transitions
+- Accessibility-friendly
 
-Internal tool for TMS Suncorp development.
+## 📜 Version History
+
+- **v3.0.0** - Added GCS Browser, removed Docker configuration
+- **v2.0.0** - Added Kafka support, Flow Diagram, REST Client
+- **v1.0.0** - Initial PubSub Explorer
 
 ## 🙏 Acknowledgments
 
-- UI inspired by [Redpanda Console](https://redpanda.com/)
-- Color scheme from [GitHub Dark Theme](https://github.com/)
-- Built to solve real proxy pain on macOS 🎯
+- Built for TMS Suncorp local development
+- UI inspired by Google Cloud Console
+- Solves real proxy/HTTP pain points on macOS
 
 ---
 
-**Made with ❤️ for debugging CloudEvents without proxy headaches**
+**Made with ❤️ for local cloud development without headaches**

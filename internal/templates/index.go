@@ -225,6 +225,12 @@ const Index = `<!DOCTYPE html>
                 <div class="option-desc">Browse Google Cloud Storage buckets and files with preview and download</div>
                 <span class="badge">Storage</span>
             </a>
+
+            <a href="/trace-journey" class="option-card">
+                <div class="option-title">Trace Journey Viewer</div>
+                <div class="option-desc">Track requests across containers with trace IDs and visualize the journey</div>
+                <span class="badge">Debugging</span>
+            </a>
         </div>
     </div>
 

@@ -29,6 +29,8 @@ func main() {
 	http.HandleFunc("/api/kafka/pull", handlers.HandlePullKafka)
 	http.HandleFunc("/api/kafka/publish", handlers.HandlePublishKafka)
 	http.HandleFunc("/api/rest/send", handlers.HandleRestSend)
+	http.HandleFunc("/api/docker/status", handlers.HandleDockerStatus)
+	http.HandleFunc("/api/gcloud/status", handlers.HandleGCloudStatus)
 
 	port := "8888"
 	log.Printf("🚀 Testing Studio starting on http://localhost:%s", port)

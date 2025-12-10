@@ -77,9 +77,47 @@ const Index = `<!DOCTYPE html>
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
+        .status-indicators {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: #5f6368;
+            font-weight: 500;
+        }
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            box-shadow: 0 0 0 2px rgba(0,0,0,0.1);
+        }
+        .status-dot.green {
+            background: #34a853;
+        }
+        .status-dot.red {
+            background: #ea4335;
+        }
     </style>
 </head>
 <body>
+    <div class="status-indicators">
+        <div class="status-indicator" id="dockerStatus">
+            <div class="status-dot red"></div>
+            <span>Docker</span>
+        </div>
+        <div class="status-indicator" id="gcloudStatus">
+            <div class="status-dot red"></div>
+            <span id="gcloudText">GCloud</span>
+        </div>
+    </div>
     <div class="landing">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 48px;">
             <div>
@@ -133,6 +171,70 @@ const Index = `<!DOCTYPE html>
                 menu.style.display = 'none';
             }
         });
+
+        // Check Docker status
+        async function checkDockerStatus() {
+            try {
+                const response = await fetch('/api/docker/status');
+                const data = await response.json();
+                const statusIndicator = document.getElementById('dockerStatus');
+                const dot = statusIndicator.querySelector('.status-dot');
+
+                if (data.running) {
+                    dot.classList.remove('red');
+                    dot.classList.add('green');
+                } else {
+                    dot.classList.remove('green');
+                    dot.classList.add('red');
+                }
+            } catch (error) {
+                console.error('Failed to check Docker status:', error);
+            }
+        }
+
+        // Check Docker status on page load
+        checkDockerStatus();
+
+        // Check Docker status every 10 seconds
+        setInterval(checkDockerStatus, 10000);
+
+        // Check GCloud authentication status
+        async function checkGCloudStatus() {
+            try {
+                const response = await fetch('/api/gcloud/status');
+                const data = await response.json();
+                const statusIndicator = document.getElementById('gcloudStatus');
+                const dot = statusIndicator.querySelector('.status-dot');
+                const textSpan = document.getElementById('gcloudText');
+
+                if (data.authenticated) {
+                    dot.classList.remove('red');
+                    dot.classList.add('green');
+
+                    // Show last login time if available
+                    if (data.lastLoginTime) {
+                        textSpan.textContent = 'GCloud: ' + data.lastLoginTime;
+                        textSpan.title = 'Account: ' + data.account;
+                    } else {
+                        textSpan.textContent = 'GCloud: Active';
+                        textSpan.title = 'Account: ' + data.account;
+                    }
+                } else {
+                    dot.classList.remove('green');
+                    dot.classList.add('red');
+                    textSpan.textContent = 'GCloud: Not authenticated';
+                    textSpan.title = 'Run: gcloud auth login';
+                }
+            } catch (error) {
+                console.error('Failed to check GCloud status:', error);
+            }
+        }
+
+        // Check GCloud status on page load
+        checkGCloudStatus();
+
+        // Check GCloud status every 30 seconds
+        setInterval(checkGCloudStatus, 30000);
 
         ` + Base64ModalJS + `
     </script>

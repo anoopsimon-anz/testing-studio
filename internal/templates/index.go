@@ -152,6 +152,12 @@ const Index = `<!DOCTYPE html>
                 <div class="option-desc">Send HTTP requests with custom headers, body, and TLS certificates</div>
                 <span class="badge">API Testing</span>
             </a>
+
+            <a href="/gcs" class="option-card">
+                <div class="option-title">GCS Browser</div>
+                <div class="option-desc">Browse Google Cloud Storage buckets and files with preview and download</div>
+                <span class="badge">Storage</span>
+            </a>
         </div>
     </div>
 

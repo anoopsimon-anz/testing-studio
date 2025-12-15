@@ -31,3 +31,7 @@ Thumbs.db
 
 # Git worktrees
 .worktrees/
+
+# Test artifacts
+tests/screenshots/
+tests/test-report.html

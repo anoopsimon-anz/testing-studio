@@ -22,6 +22,7 @@ func main() {
 	http.HandleFunc("/flow-diagram", handlers.HandleFlowDiagram)
 	http.HandleFunc("/gcs", handlers.HandleGCS)
 	http.HandleFunc("/trace-journey", handlers.HandleTraceJourney)
+	http.HandleFunc("/spanner", handlers.HandleSpanner)
 	http.HandleFunc("/config-editor", handlers.HandleConfigEditor)
 
 	// Register API handlers
@@ -40,6 +41,11 @@ func main() {
 	http.HandleFunc("/api/gcs/object/content", handlers.HandleGetObjectContent)
 	http.HandleFunc("/api/gcs/object/download", handlers.HandleDownloadObject)
 	http.HandleFunc("/api/trace/search", handlers.HandleTraceSearch)
+	http.HandleFunc("/api/spanner/connect", handlers.HandleSpannerConnect)
+	http.HandleFunc("/api/spanner/tables", handlers.HandleSpannerTables)
+	http.HandleFunc("/api/spanner/query", handlers.HandleSpannerQuery)
+	http.HandleFunc("/api/spanner/configs", handlers.HandleSaveSpannerConfig)
+	http.HandleFunc("/api/spanner/schema", handlers.HandleSpannerSchema)
 
 	port := "8888"
 	log.Printf("🚀 Testing Studio starting on http://localhost:%s", port)

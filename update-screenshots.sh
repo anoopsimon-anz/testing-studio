@@ -17,13 +17,13 @@ A web-based tool for testing local cloud services - PubSub, Kafka, REST APIs, GC
 ## UI Screenshots
 
 ### Homepage
-![Homepage](screenshots/ui-homepage.png)
+![Homepage](docs/screenshots/ui-homepage.png)
 
 ### Settings / Config Editor
-![Settings](screenshots/ui-settings.png)
+![Settings](docs/screenshots/ui-settings.png)
 
 ### REST Client (Postman-style)
-![REST Client](screenshots/ui-rest-client.png)
+![REST Client](docs/screenshots/ui-rest-client.png)
 
 ## Features
 
@@ -62,7 +62,7 @@ EOF
 
 # Step 3: Commit changes
 echo "3️⃣ Committing changes..."
-git add screenshots/*.png README.md
+git add docs/screenshots/*.png README.md
 if git diff --cached --quiet; then
     echo "⚠️  No changes to commit (screenshots and README already up to date)"
 else

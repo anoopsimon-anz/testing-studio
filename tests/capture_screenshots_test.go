@@ -40,7 +40,7 @@ func TestCaptureScreenshots(t *testing.T) {
 	}
 	page.WaitForTimeout(1000)
 	if _, err = page.Screenshot(playwright.PageScreenshotOptions{
-		Path: playwright.String("../screenshots/ui-homepage.png"),
+		Path: playwright.String("../docs/screenshots/ui-homepage.png"),
 	}); err != nil {
 		t.Fatalf("could not take homepage screenshot: %v", err)
 	}
@@ -52,7 +52,7 @@ func TestCaptureScreenshots(t *testing.T) {
 	}
 	page.WaitForTimeout(1000)
 	if _, err = page.Screenshot(playwright.PageScreenshotOptions{
-		Path: playwright.String("../screenshots/ui-settings.png"),
+		Path: playwright.String("../docs/screenshots/ui-settings.png"),
 	}); err != nil {
 		t.Fatalf("could not take settings screenshot: %v", err)
 	}
@@ -64,7 +64,7 @@ func TestCaptureScreenshots(t *testing.T) {
 	}
 	page.WaitForTimeout(1000)
 	if _, err = page.Screenshot(playwright.PageScreenshotOptions{
-		Path: playwright.String("../screenshots/ui-rest-client.png"),
+		Path: playwright.String("../docs/screenshots/ui-rest-client.png"),
 	}); err != nil {
 		t.Fatalf("could not take rest-client screenshot: %v", err)
 	}

@@ -35,16 +35,53 @@ const ConfigEditor = `<!DOCTYPE html>
             text-decoration: underline;
         }
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
+            display: flex;
+            height: calc(100vh - 60px);
+            overflow: hidden;
+        }
+        .sidebar {
+            width: 280px;
+            background: white;
+            border-right: 1px solid #dadce0;
+            overflow-y: auto;
+        }
+        .sidebar-item {
+            padding: 16px 24px;
+            cursor: pointer;
+            border-bottom: 1px solid #e8eaed;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .sidebar-item:hover {
+            background: #f8f9fa;
+        }
+        .sidebar-item.active {
+            background: #e8f0fe;
+            border-left: 4px solid #1a73e8;
+            padding-left: 20px;
+            font-weight: 500;
+            color: #1a73e8;
+        }
+        .sidebar-item-icon {
+            font-size: 20px;
+        }
+        .content-panel {
+            flex: 1;
+            overflow-y: auto;
             padding: 24px;
+            background: #f5f5f5;
         }
         .section {
             background: white;
             border: 1px solid #dadce0;
             border-radius: 8px;
             padding: 24px;
-            margin-bottom: 24px;
+            display: none;
+        }
+        .section.active {
+            display: block;
         }
         .section-header {
             display: flex;
@@ -196,10 +233,26 @@ const ConfigEditor = `<!DOCTYPE html>
     </div>
 
     <div class="container">
-        <div id="successMessage" class="success-message"></div>
+        <div class="sidebar">
+            <div class="sidebar-item active" onclick="switchTab('pubsub')" id="tab-pubsub">
+                <span class="sidebar-item-icon">📮</span>
+                <span>Google PubSub</span>
+            </div>
+            <div class="sidebar-item" onclick="switchTab('kafka')" id="tab-kafka">
+                <span class="sidebar-item-icon">📡</span>
+                <span>Kafka / EventMesh</span>
+            </div>
+            <div class="sidebar-item" onclick="switchTab('spanner')" id="tab-spanner">
+                <span class="sidebar-item-icon">🗄️</span>
+                <span>Spanner Database</span>
+            </div>
+        </div>
 
-        <!-- PubSub Configs -->
-        <div class="section">
+        <div class="content-panel">
+            <div id="successMessage" class="success-message"></div>
+
+            <!-- PubSub Configs -->
+        <div class="section active" id="section-pubsub">
             <div class="section-header">
                 <div class="section-title">Google PubSub Configurations</div>
                 <button class="add-btn" onclick="showNewConfigForm('pubsub')">+ Add New</button>
@@ -230,7 +283,7 @@ const ConfigEditor = `<!DOCTYPE html>
         </div>
 
         <!-- Kafka Configs -->
-        <div class="section">
+        <div class="section" id="section-kafka">
             <div class="section-header">
                 <div class="section-title">Kafka / EventMesh Configurations</div>
                 <button class="add-btn" onclick="showNewConfigForm('kafka')">+ Add New</button>
@@ -265,7 +318,7 @@ const ConfigEditor = `<!DOCTYPE html>
         </div>
 
         <!-- Spanner Configs -->
-        <div class="section">
+        <div class="section" id="section-spanner">
             <div class="section-header">
                 <div class="section-title">Spanner Database Configurations</div>
                 <button class="add-btn" onclick="showNewConfigForm('spanner')">+ Add New</button>
@@ -298,10 +351,21 @@ const ConfigEditor = `<!DOCTYPE html>
                 </div>
             </div>
         </div>
+        </div>
     </div>
 
     <script>
         let configs = { pubsubConfigs: [], kafkaConfigs: [], spannerConfigs: [] };
+
+        function switchTab(tabName) {
+            // Remove active from all tabs
+            document.querySelectorAll('.sidebar-item').forEach(item => item.classList.remove('active'));
+            document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
+
+            // Add active to selected tab
+            document.getElementById('tab-' + tabName).classList.add('active');
+            document.getElementById('section-' + tabName).classList.add('active');
+        }
 
         async function loadConfigs() {
             const response = await fetch('/api/configs');

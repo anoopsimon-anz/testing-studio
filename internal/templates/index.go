@@ -183,6 +183,7 @@ const Index = `<!DOCTYPE html>
             <a href="/config-editor" id="linkConfigEditor">Configuration Editor</a>
             <a href="/flow-diagram" id="linkFlowDiagram">Communications - Event Handling</a>
             <a href="#" id="linkBase64Tool" onclick="openBase64Tool(); toggleToolsMenu(); return false;">Base64 Encoder/Decoder</a>
+            <a href="#" id="linkJWTTool" onclick="openJWTTool(); toggleToolsMenu(); return false;">JSON to JWT Converter</a>
         </div>
     </div>
     <div class="status-indicators" id="statusIndicators">
@@ -241,6 +242,7 @@ const Index = `<!DOCTYPE html>
     </div>
 
     ` + Base64Modal + `
+    ` + JWTModal + `
 
     <script>
         function toggleToolsMenu() {
@@ -320,6 +322,7 @@ const Index = `<!DOCTYPE html>
         setInterval(checkGCloudStatus, 30000);
 
         ` + Base64ModalJS + `
+        ` + JWTModalJS + `
     </script>
 </body>
 </html>`

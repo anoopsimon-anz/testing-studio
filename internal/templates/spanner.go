@@ -1,6 +1,10 @@
 package templates
 
 const SpannerContent = `
+<div style="background: #e8f0fe; border: 1px solid #d2e3fc; border-radius: 4px; padding: 10px 16px; margin-bottom: 16px; font-size: 13px; color: #1967d2;">
+    💡 <strong>Tip:</strong> You can manage all Spanner connection profiles in <a href="/config-editor" style="color: #1a73e8; text-decoration: underline; font-weight: 500;">Global Settings</a>
+</div>
+
 <div class="panel">
     <div class="panel-header">
         <div class="panel-title">Connection Settings</div>

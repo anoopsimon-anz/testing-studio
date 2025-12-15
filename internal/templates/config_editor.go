@@ -263,10 +263,45 @@ const ConfigEditor = `<!DOCTYPE html>
                 </div>
             </div>
         </div>
+
+        <!-- Spanner Configs -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">Spanner Database Configurations</div>
+                <button class="add-btn" onclick="showNewConfigForm('spanner')">+ Add New</button>
+            </div>
+            <div id="spannerConfigs"></div>
+            <div id="newSpannerForm" class="new-config-form">
+                <div class="form-group">
+                    <label class="form-label">Configuration Name</label>
+                    <input type="text" class="form-input" id="newSpannerName" placeholder="e.g., TMS Local">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Emulator Host</label>
+                    <input type="text" class="form-input" id="newSpannerHost" placeholder="e.g., localhost:9010">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Project ID</label>
+                    <input type="text" class="form-input" id="newSpannerProject" placeholder="e.g., tms-suncorp-local">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Instance ID</label>
+                    <input type="text" class="form-input" id="newSpannerInstance" placeholder="e.g., tms-suncorp-local">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Database ID</label>
+                    <input type="text" class="form-input" id="newSpannerDatabase" placeholder="e.g., tms-suncorp-db">
+                </div>
+                <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                    <button class="cancel-btn" onclick="hideNewConfigForm('spanner')">Cancel</button>
+                    <button class="save-btn" onclick="saveNewSpannerConfig()">Save Configuration</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
-        let configs = { pubsubConfigs: [], kafkaConfigs: [] };
+        let configs = { pubsubConfigs: [], kafkaConfigs: [], spannerConfigs: [] };
 
         async function loadConfigs() {
             const response = await fetch('/api/configs');
@@ -277,6 +312,7 @@ const ConfigEditor = `<!DOCTYPE html>
         function renderConfigs() {
             renderPubSubConfigs();
             renderKafkaConfigs();
+            renderSpannerConfigs();
         }
 
         function renderPubSubConfigs() {
@@ -368,6 +404,54 @@ const ConfigEditor = `<!DOCTYPE html>
             ` + "`" + `).join('');
         }
 
+        function renderSpannerConfigs() {
+            const container = document.getElementById('spannerConfigs');
+            if (!configs.spannerConfigs) configs.spannerConfigs = [];
+            container.innerHTML = configs.spannerConfigs.map((config, index) => ` + "`" + `
+                <div class="config-item" id="spanner-${index}">
+                    <div class="config-item-header">
+                        <div class="config-name">${config.name}</div>
+                        <div class="config-actions">
+                            <button class="edit-btn" onclick="editSpannerConfig(${index})">Edit</button>
+                            <button class="delete-btn" onclick="deleteSpannerConfig(${index})">Delete</button>
+                        </div>
+                    </div>
+                    <div class="config-details" id="spanner-details-${index}">
+                        <div><strong>Emulator Host:</strong> ${config.emulatorHost}</div>
+                        <div><strong>Project ID:</strong> ${config.projectId}</div>
+                        <div><strong>Instance ID:</strong> ${config.instanceId}</div>
+                        <div><strong>Database ID:</strong> ${config.databaseId}</div>
+                    </div>
+                    <div class="hidden" id="spanner-form-${index}">
+                        <div class="form-group">
+                            <label class="form-label">Configuration Name</label>
+                            <input type="text" class="form-input" id="edit-spanner-name-${index}" value="${config.name}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Emulator Host</label>
+                            <input type="text" class="form-input" id="edit-spanner-host-${index}" value="${config.emulatorHost}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Project ID</label>
+                            <input type="text" class="form-input" id="edit-spanner-project-${index}" value="${config.projectId}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Instance ID</label>
+                            <input type="text" class="form-input" id="edit-spanner-instance-${index}" value="${config.instanceId}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Database ID</label>
+                            <input type="text" class="form-input" id="edit-spanner-database-${index}" value="${config.databaseId}">
+                        </div>
+                        <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                            <button class="cancel-btn" onclick="cancelEditSpanner(${index})">Cancel</button>
+                            <button class="save-btn" onclick="saveSpannerConfig(${index})">Save</button>
+                        </div>
+                    </div>
+                </div>
+            ` + "`" + `).join('');
+        }
+
         function editPubSubConfig(index) {
             document.getElementById(` + "`pubsub-details-${index}`" + `).classList.add('hidden');
             document.getElementById(` + "`pubsub-form-${index}`" + `).classList.remove('hidden');
@@ -429,11 +513,44 @@ const ConfigEditor = `<!DOCTYPE html>
             showSuccess('Kafka configuration deleted successfully!');
         }
 
+        function editSpannerConfig(index) {
+            document.getElementById(` + "`spanner-details-${index}`" + `).classList.add('hidden');
+            document.getElementById(` + "`spanner-form-${index}`" + `).classList.remove('hidden');
+        }
+
+        function cancelEditSpanner(index) {
+            document.getElementById(` + "`spanner-details-${index}`" + `).classList.remove('hidden');
+            document.getElementById(` + "`spanner-form-${index}`" + `).classList.add('hidden');
+        }
+
+        async function saveSpannerConfig(index) {
+            const updatedConfig = {
+                name: document.getElementById(` + "`edit-spanner-name-${index}`" + `).value,
+                emulatorHost: document.getElementById(` + "`edit-spanner-host-${index}`" + `).value,
+                projectId: document.getElementById(` + "`edit-spanner-project-${index}`" + `).value,
+                instanceId: document.getElementById(` + "`edit-spanner-instance-${index}`" + `).value,
+                databaseId: document.getElementById(` + "`edit-spanner-database-${index}`" + `).value
+            };
+
+            configs.spannerConfigs[index] = updatedConfig;
+            await saveConfigs();
+            showSuccess('Spanner configuration updated successfully!');
+        }
+
+        async function deleteSpannerConfig(index) {
+            if (!confirm('Are you sure you want to delete this configuration?')) return;
+            configs.spannerConfigs.splice(index, 1);
+            await saveConfigs();
+            showSuccess('Spanner configuration deleted successfully!');
+        }
+
         function showNewConfigForm(type) {
             if (type === 'pubsub') {
                 document.getElementById('newPubSubForm').classList.add('visible');
-            } else {
+            } else if (type === 'kafka') {
                 document.getElementById('newKafkaForm').classList.add('visible');
+            } else if (type === 'spanner') {
+                document.getElementById('newSpannerForm').classList.add('visible');
             }
         }
 
@@ -441,9 +558,12 @@ const ConfigEditor = `<!DOCTYPE html>
             if (type === 'pubsub') {
                 document.getElementById('newPubSubForm').classList.remove('visible');
                 clearPubSubForm();
-            } else {
+            } else if (type === 'kafka') {
                 document.getElementById('newKafkaForm').classList.remove('visible');
                 clearKafkaForm();
+            } else if (type === 'spanner') {
+                document.getElementById('newSpannerForm').classList.remove('visible');
+                clearSpannerForm();
             }
         }
 
@@ -460,6 +580,14 @@ const ConfigEditor = `<!DOCTYPE html>
             document.getElementById('newKafkaTopic').value = '';
             document.getElementById('newKafkaGroup').value = '';
             document.getElementById('newKafkaSchema').value = '';
+        }
+
+        function clearSpannerForm() {
+            document.getElementById('newSpannerName').value = '';
+            document.getElementById('newSpannerHost').value = '';
+            document.getElementById('newSpannerProject').value = '';
+            document.getElementById('newSpannerInstance').value = '';
+            document.getElementById('newSpannerDatabase').value = '';
         }
 
         async function saveNewPubSubConfig() {
@@ -499,6 +627,26 @@ const ConfigEditor = `<!DOCTYPE html>
             await saveConfigs();
             hideNewConfigForm('kafka');
             showSuccess('New Kafka configuration added successfully!');
+        }
+
+        async function saveNewSpannerConfig() {
+            const newConfig = {
+                name: document.getElementById('newSpannerName').value,
+                emulatorHost: document.getElementById('newSpannerHost').value,
+                projectId: document.getElementById('newSpannerProject').value,
+                instanceId: document.getElementById('newSpannerInstance').value,
+                databaseId: document.getElementById('newSpannerDatabase').value
+            };
+
+            if (!newConfig.name || !newConfig.emulatorHost || !newConfig.projectId || !newConfig.instanceId || !newConfig.databaseId) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            configs.spannerConfigs.push(newConfig);
+            await saveConfigs();
+            hideNewConfigForm('spanner');
+            showSuccess('New Spanner configuration added successfully!');
         }
 
         async function saveConfigs() {

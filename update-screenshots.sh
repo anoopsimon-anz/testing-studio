@@ -63,7 +63,10 @@ EOF
 # Step 3: Commit changes
 echo "3️⃣ Committing changes..."
 git add screenshots/*.png README.md
-git commit -m "$(cat <<'COMMIT_EOF'
+if git diff --cached --quiet; then
+    echo "⚠️  No changes to commit (screenshots and README already up to date)"
+else
+    git commit -m "$(cat <<'COMMIT_EOF'
 Update README with UI screenshots
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
@@ -71,7 +74,9 @@ Update README with UI screenshots
 Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>
 COMMIT_EOF
 )"
+    echo "✅ Changes committed!"
+fi
 
-echo "✅ Done! Screenshots captured, README updated, and changes committed."
 echo ""
+echo "✅ Done! Screenshots captured and README updated."
 echo "To push to remote, run: git push origin main"

@@ -146,3 +146,142 @@ func TestStudioHomePage(t *testing.T) {
 
 	t.Log("All core tests passed successfully!")
 }
+
+func TestRestClientUI(t *testing.T) {
+	// Start Playwright
+	pw, err := playwright.Run()
+	if err != nil {
+		t.Fatalf("could not start playwright: %v", err)
+	}
+	defer pw.Stop()
+
+	// Launch browser
+	browser, err := pw.Chromium.Launch(playwright.BrowserTypeLaunchOptions{
+		Headless: playwright.Bool(true),
+	})
+	if err != nil {
+		t.Fatalf("could not launch browser: %v", err)
+	}
+	defer browser.Close()
+
+	// Create new page
+	page, err := browser.NewPage()
+	if err != nil {
+		t.Fatalf("could not create page: %v", err)
+	}
+
+	// Navigate to REST client
+	if _, err = page.Goto("http://localhost:8888/rest-client"); err != nil {
+		t.Fatalf("could not goto rest-client: %v", err)
+	}
+
+	// Wait for page to load
+	page.WaitForTimeout(1000)
+
+	// Take screenshot
+	if _, err = page.Screenshot(playwright.PageScreenshotOptions{
+		Path: playwright.String("screenshots/rest-client-new-ui.png"),
+	}); err != nil {
+		t.Fatalf("could not take screenshot: %v", err)
+	}
+
+	t.Log("✅ Screenshot saved to screenshots/rest-client-new-ui.png")
+}
+
+func TestRestClientAuthTab(t *testing.T) {
+	// Start Playwright
+	pw, err := playwright.Run()
+	if err != nil {
+		t.Fatalf("could not start playwright: %v", err)
+	}
+	defer pw.Stop()
+
+	// Launch browser
+	browser, err := pw.Chromium.Launch(playwright.BrowserTypeLaunchOptions{
+		Headless: playwright.Bool(true),
+	})
+	if err != nil {
+		t.Fatalf("could not launch browser: %v", err)
+	}
+	defer browser.Close()
+
+	// Create new page
+	page, err := browser.NewPage()
+	if err != nil {
+		t.Fatalf("could not create page: %v", err)
+	}
+
+	// Navigate to REST client
+	if _, err = page.Goto("http://localhost:8888/rest-client"); err != nil {
+		t.Fatalf("could not goto rest-client: %v", err)
+	}
+
+	// Wait for page to load
+	page.WaitForTimeout(500)
+
+	// Click on Authorization tab
+	if err := page.Locator("text=Authorization").Click(); err != nil {
+		t.Fatalf("could not click Authorization tab: %v", err)
+	}
+
+	// Wait for tab to switch
+	page.WaitForTimeout(300)
+
+	// Take screenshot
+	if _, err = page.Screenshot(playwright.PageScreenshotOptions{
+		Path: playwright.String("screenshots/rest-client-auth-tab.png"),
+	}); err != nil {
+		t.Fatalf("could not take screenshot: %v", err)
+	}
+
+	t.Log("✅ Screenshot saved to screenshots/rest-client-auth-tab.png")
+}
+
+func TestRestClientJSONHighlighting(t *testing.T) {
+	// Start Playwright
+	pw, err := playwright.Run()
+	if err != nil {
+		t.Fatalf("could not start playwright: %v", err)
+	}
+	defer pw.Stop()
+
+	// Launch browser
+	browser, err := pw.Chromium.Launch(playwright.BrowserTypeLaunchOptions{
+		Headless: playwright.Bool(true),
+	})
+	if err != nil {
+		t.Fatalf("could not launch browser: %v", err)
+	}
+	defer browser.Close()
+
+	// Create new page
+	page, err := browser.NewPage()
+	if err != nil {
+		t.Fatalf("could not create page: %v", err)
+	}
+
+	// Navigate to REST client
+	if _, err = page.Goto("http://localhost:8888/rest-client"); err != nil {
+		t.Fatalf("could not goto rest-client: %v", err)
+	}
+
+	// Wait for page to load
+	page.WaitForTimeout(500)
+
+	// Click Send button to make the request
+	if err := page.Locator("#sendBtn").Click(); err != nil {
+		t.Fatalf("could not click Send button: %v", err)
+	}
+
+	// Wait for response
+	page.WaitForTimeout(2000)
+
+	// Take screenshot showing JSON syntax highlighting
+	if _, err = page.Screenshot(playwright.PageScreenshotOptions{
+		Path: playwright.String("screenshots/rest-client-json-highlighting.png"),
+	}); err != nil {
+		t.Fatalf("could not take screenshot: %v", err)
+	}
+
+	t.Log("✅ Screenshot saved to screenshots/rest-client-json-highlighting.png")
+}

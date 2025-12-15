@@ -292,6 +292,13 @@ const GCS = `<!DOCTYPE html>
         let currentBucket = null;
         let currentPrefix = '';
 
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 B';
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+
         async function loadBuckets() {
             try {
                 const response = await fetch('/api/gcs/buckets');
@@ -360,12 +367,12 @@ const GCS = `<!DOCTYPE html>
                         data.items.forEach(item => {
                             const fileName = item.name.replace(currentPrefix, '');
                             if (fileName) { // Skip if it's the prefix itself
-                                const sizeKB = Math.round(item.size / 1024);
+                                const fileSize = formatFileSize(item.size);
                                 html += '<li class="file-item">';
                                 html += '<div class="file-icon">📄</div>';
                                 html += '<div class="file-info">';
                                 html += '<div class="file-name">' + fileName + '</div>';
-                                html += '<div class="file-meta">' + sizeKB + ' KB</div>';
+                                html += '<div class="file-meta">' + fileSize + '</div>';
                                 html += '</div>';
                                 html += '<div class="file-actions">';
                                 html += '<button class="btn" onclick="previewFile(\'' + item.name + '\')">Preview</button>';

@@ -231,6 +231,12 @@ const Index = `<!DOCTYPE html>
                 <div class="option-desc" id="descTraceJourney">Track requests across containers with trace IDs and visualize the journey</div>
                 <span class="badge" id="badgeTraceJourney">Debugging</span>
             </a>
+
+            <a href="/spanner" class="option-card" id="cardSpanner">
+                <div class="option-title" id="titleSpanner">Spanner Explorer</div>
+                <div class="option-desc" id="descSpanner">Browse tables, run SQL queries, test local Spanner emulator</div>
+                <span class="badge" id="badgeSpanner">Database</span>
+            </a>
         </div>
     </div>
 

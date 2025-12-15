@@ -31,10 +31,27 @@ type SpannerConfig struct {
 	DatabaseID   string `json:"databaseId"`
 }
 
+type SavedRequest struct {
+	Name       string                 `json:"name"`
+	Method     string                 `json:"method"`
+	URL        string                 `json:"url"`
+	Headers    map[string]string      `json:"headers"`
+	Parameters map[string]string      `json:"parameters"`
+	Body       string                 `json:"body"`
+	TLSCert    string                 `json:"tlsCert,omitempty"`
+	TLSKey     string                 `json:"tlsKey,omitempty"`
+}
+
+type RequestCollection struct {
+	Name     string          `json:"name"`
+	Requests []SavedRequest  `json:"requests"`
+}
+
 type Config struct {
-	PubSubConfigs  []PubSubConfig  `json:"pubsubConfigs"`
-	KafkaConfigs   []KafkaConfig   `json:"kafkaConfigs"`
-	SpannerConfigs []SpannerConfig `json:"spannerConfigs"`
+	PubSubConfigs       []PubSubConfig       `json:"pubsubConfigs"`
+	KafkaConfigs        []KafkaConfig        `json:"kafkaConfigs"`
+	SpannerConfigs      []SpannerConfig      `json:"spannerConfigs"`
+	RequestCollections  []RequestCollection  `json:"requestCollections,omitempty"`
 }
 
 var (
@@ -157,4 +174,86 @@ func AddOrUpdateSpannerConfig(newConfig SpannerConfig) error {
 	mu.Unlock()
 
 	return Save()
+}
+
+func SaveRequestToCollection(collectionName string, req SavedRequest) error {
+	mu.Lock()
+	defer mu.Unlock()
+
+	// Find or create collection
+	var collection *RequestCollection
+	for i := range config.RequestCollections {
+		if config.RequestCollections[i].Name == collectionName {
+			collection = &config.RequestCollections[i]
+			break
+		}
+	}
+
+	if collection == nil {
+		// Create new collection
+		config.RequestCollections = append(config.RequestCollections, RequestCollection{
+			Name:     collectionName,
+			Requests: []SavedRequest{},
+		})
+		collection = &config.RequestCollections[len(config.RequestCollections)-1]
+	}
+
+	// Add or update request in collection
+	found := false
+	for i, r := range collection.Requests {
+		if r.Name == req.Name {
+			collection.Requests[i] = req
+			found = true
+			break
+		}
+	}
+	if !found {
+		collection.Requests = append(collection.Requests, req)
+	}
+
+	return saveLocked()
+}
+
+func GetRequestCollections() []RequestCollection {
+	mu.RLock()
+	defer mu.RUnlock()
+	return config.RequestCollections
+}
+
+func DeleteRequestFromCollection(collectionName, requestName string) error {
+	mu.Lock()
+	defer mu.Unlock()
+
+	for i, coll := range config.RequestCollections {
+		if coll.Name == collectionName {
+			for j, req := range coll.Requests {
+				if req.Name == requestName {
+					config.RequestCollections[i].Requests = append(
+						coll.Requests[:j],
+						coll.Requests[j+1:]...,
+					)
+					return saveLocked()
+				}
+			}
+		}
+	}
+
+	return saveLocked()
+}
+
+func DeleteCollection(name string) error {
+	mu.Lock()
+	defer mu.Unlock()
+
+	for i, coll := range config.RequestCollections {
+		if coll.Name == name {
+			config.RequestCollections = append(
+				config.RequestCollections[:i],
+				config.RequestCollections[i+1:]...,
+			)
+			return saveLocked()
+		}
+	}
+
+	return saveLocked()
 }

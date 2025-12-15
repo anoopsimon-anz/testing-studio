@@ -1,18 +1,35 @@
 package templates
 
 const RestClient = `
-<div style="background: #e8f0fe; border: 1px solid #d2e3fc; border-radius: 4px; padding: 10px 16px; margin-bottom: 16px; font-size: 13px; color: #1967d2;">
-    💡 <strong>Tip:</strong> You can manage saved requests and environments in <a href="/config-editor" style="color: #1a73e8; text-decoration: underline; font-weight: 500;">Global Settings</a>
-</div>
-
-<div style="background: white; border-radius: 8px; border: 1px solid #dadce0; overflow: hidden;">
-    <!-- Top Bar: Request Name -->
-    <div style="padding: 16px 20px; border-bottom: 1px solid #e8eaed; display: flex; align-items: center; gap: 12px;">
-        <span style="color: #5f6368; font-size: 13px; font-weight: 500;">GET</span>
-        <input type="text" id="requestName" value="Untitled Request"
-               style="border: none; font-size: 15px; font-weight: 500; color: #202124; flex: 1; outline: none;" />
-        <button onclick="saveRequest()" style="padding: 6px 16px; background: white; border: 1px solid #dadce0; border-radius: 4px; cursor: pointer; font-size: 13px; color: #5f6368;">Save</button>
+<div style="display: flex; height: calc(100vh - 60px); gap: 0;">
+    <!-- Collections Sidebar -->
+    <div id="collectionsSidebar" style="width: 300px; background: #f8f9fa; border-right: 1px solid #dadce0; display: flex; flex-direction: column;">
+        <div style="padding: 16px; border-bottom: 1px solid #dadce0; background: white;">
+            <div style="font-size: 14px; font-weight: 500; color: #202124; margin-bottom: 12px;">Collections</div>
+            <button onclick="createNewCollection()" style="width: 100%; padding: 8px 12px; background: #7c3aed; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                <span style="font-size: 16px;">+</span> New Collection
+            </button>
+        </div>
+        <div id="collectionsContainer" style="flex: 1; overflow-y: auto; padding: 8px;">
+            <!-- Collections will be loaded here -->
+        </div>
     </div>
+
+    <!-- Main Content -->
+    <div style="flex: 1; display: flex; flex-direction: column; overflow: hidden;">
+        <div style="background: #e8f0fe; border-bottom: 1px solid #d2e3fc; padding: 10px 16px; font-size: 13px; color: #1967d2;">
+            💡 <strong>Tip:</strong> You can manage saved requests and environments in <a href="/config-editor" style="color: #1a73e8; text-decoration: underline; font-weight: 500;">Global Settings</a>
+        </div>
+
+        <div style="flex: 1; overflow-y: auto; padding: 16px;">
+            <div style="background: white; border-radius: 8px; border: 1px solid #dadce0; overflow: hidden;">
+                <!-- Top Bar: Request Name -->
+                <div style="padding: 16px 20px; border-bottom: 1px solid #e8eaed; display: flex; align-items: center; gap: 12px;">
+                    <input type="text" id="requestName" value="Untitled Request"
+                           style="border: none; font-size: 15px; font-weight: 500; color: #202124; flex: 1; outline: none;" />
+                    <button onclick="saveRequest()" style="padding: 6px 16px; background: #7c3aed; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 500;">Save</button>
+                    <button onclick="deleteCurrentRequest()" id="deleteBtn" style="padding: 6px 16px; background: white; border: 1px solid #dadce0; border-radius: 4px; cursor: pointer; font-size: 13px; color: #d93025; display: none;">Delete</button>
+                </div>
 
     <!-- URL Bar -->
     <div style="padding: 16px 20px; border-bottom: 1px solid #e8eaed; display: flex; gap: 8px; align-items: center;">
@@ -196,8 +213,77 @@ const RestClient = `
         </div>
     </div>
 </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <style>
+.collection {
+    margin-bottom: 4px;
+    border-radius: 4px;
+    overflow: hidden;
+}
+.collection-header {
+    padding: 8px 12px;
+    background: white;
+    border: 1px solid #dadce0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #202124;
+    transition: background 0.15s;
+}
+.collection-header:hover {
+    background: #f1f3f4;
+}
+.collection-icon {
+    font-size: 12px;
+    color: #5f6368;
+}
+.collection-requests {
+    display: none;
+    background: white;
+    border: 1px solid #dadce0;
+    border-top: none;
+}
+.collection-requests.expanded {
+    display: block;
+}
+.request-item {
+    padding: 8px 12px 8px 32px;
+    font-size: 12px;
+    color: #5f6368;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.15s;
+}
+.request-item:hover {
+    background: #e8f0fe;
+}
+.request-item.active {
+    background: #e8f0fe;
+    color: #1a73e8;
+    font-weight: 500;
+}
+.request-method {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 3px;
+    background: #e8eaed;
+    color: #5f6368;
+}
+.request-method.GET { background: #e8f5e9; color: #1e8e3e; }
+.request-method.POST { background: #e8f0fe; color: #1967d2; }
+.request-method.PUT { background: #fef7e0; color: #f9ab00; }
+.request-method.DELETE { background: #fce8e6; color: #d93025; }
+
 .rest-tab:hover {
     background: #f1f3f4;
 }
@@ -338,9 +424,242 @@ function removeHeaderRow(btn) {
     btn.closest('tr').remove();
 }
 
-function saveRequest() {
-    alert('Request saved! (Feature coming soon)');
+// Track current collection and request
+let currentCollection = '';
+let currentRequest = '';
+
+// Load collections sidebar
+async function loadCollections() {
+    try {
+        const response = await fetch('/api/rest/collections');
+        const collections = await response.json();
+
+        const container = document.getElementById('collectionsContainer');
+        container.innerHTML = '';
+
+        if (!collections || collections.length === 0) {
+            container.innerHTML = '<div style="padding: 16px; text-align: center; color: #5f6368; font-size: 12px;">No collections yet.<br/>Save a request to get started!</div>';
+            return;
+        }
+
+        collections.forEach(coll => {
+            const collDiv = document.createElement('div');
+            collDiv.className = 'collection';
+            collDiv.innerHTML = \`
+                <div class="collection-header" onclick="toggleCollection('\${coll.name}')">
+                    <span class="collection-icon" id="icon-\${coll.name}">▶</span>
+                    <span>\${coll.name}</span>
+                    <span style="margin-left: auto; font-size: 11px; color: #5f6368;">(\${coll.requests.length})</span>
+                </div>
+                <div class="collection-requests" id="coll-\${coll.name}">
+                    \${coll.requests.map(req => \`
+                        <div class="request-item" onclick="loadRequest('\${coll.name}', '\${req.name}')">
+                            <span class="request-method \${req.method}">\${req.method}</span>
+                            <span>\${req.name}</span>
+                        </div>
+                    \`).join('')}
+                </div>
+            \`;
+            container.appendChild(collDiv);
+        });
+    } catch (error) {
+        console.error('Failed to load collections:', error);
+    }
 }
+
+function toggleCollection(name) {
+    const reqsDiv = document.getElementById('coll-' + name);
+    const icon = document.getElementById('icon-' + name);
+
+    reqsDiv.classList.toggle('expanded');
+    icon.textContent = reqsDiv.classList.contains('expanded') ? '▼' : '▶';
+}
+
+async function loadRequest(collectionName, requestName) {
+    try {
+        const response = await fetch('/api/rest/collections');
+        const collections = await response.json();
+
+        const collection = collections.find(c => c.name === collectionName);
+        if (!collection) return;
+
+        const req = collection.requests.find(r => r.name === requestName);
+        if (!req) return;
+
+        // Store current context
+        currentCollection = collectionName;
+        currentRequest = requestName;
+
+        // Load request data
+        document.getElementById('requestName').value = req.name;
+        document.getElementById('httpMethod').value = req.method;
+        document.getElementById('requestUrl').value = req.url;
+
+        // Load parameters
+        const paramsTable = document.getElementById('paramsTable');
+        paramsTable.innerHTML = '';
+        if (req.parameters) {
+            Object.entries(req.parameters).forEach(([key, value]) => {
+                const row = paramsTable.insertRow();
+                row.innerHTML = '<td style="padding: 8px 12px; border: 1px solid #e8eaed;"><input type="text" value="' + key + '" style="width: 100%; border: none; padding: 4px; font-size: 13px; font-family: Monaco, monospace;" /></td>' +
+                    '<td style="padding: 8px 12px; border: 1px solid #e8eaed;"><input type="text" value="' + value + '" style="width: 100%; border: none; padding: 4px; font-size: 13px; font-family: Monaco, monospace;" /></td>' +
+                    '<td style="padding: 8px 12px; border: 1px solid #e8eaed;"><input type="text" placeholder="description" style="width: 100%; border: none; padding: 4px; font-size: 13px;" /></td>' +
+                    '<td style="padding: 8px 12px; border: 1px solid #e8eaed; text-align: center;"><button onclick="removeParamRow(this)" style="background: none; border: none; cursor: pointer; color: #d93025; font-size: 16px;">×</button></td>';
+            });
+        }
+
+        // Load headers
+        const headersTable = document.getElementById('headersTable');
+        headersTable.innerHTML = '';
+        if (req.headers) {
+            Object.entries(req.headers).forEach(([key, value]) => {
+                const row = headersTable.insertRow();
+                row.innerHTML = '<td style="padding: 8px 12px; border: 1px solid #e8eaed;"><input type="text" value="' + key + '" style="width: 100%; border: none; padding: 4px; font-size: 13px; font-family: Monaco, monospace;" /></td>' +
+                    '<td style="padding: 8px 12px; border: 1px solid #e8eaed;"><input type="text" value="' + value + '" style="width: 100%; border: none; padding: 4px; font-size: 13px; font-family: Monaco, monospace;" /></td>' +
+                    '<td style="padding: 8px 12px; border: 1px solid #e8eaed; text-align: center;"><button onclick="removeHeaderRow(this)" style="background: none; border: none; cursor: pointer; color: #d93025; font-size: 16px;">×</button></td>';
+            });
+        }
+
+        // Load body
+        document.getElementById('requestBody').value = req.body || '';
+
+        // Load TLS certs
+        tlsCertContent = req.tlsCert || '';
+        tlsKeyContent = req.tlsKey || '';
+        if (req.tlsCert) {
+            document.getElementById('tlsCertFileName').textContent = 'Loaded from saved request';
+        }
+        if (req.tlsKey) {
+            document.getElementById('tlsKeyFileName').textContent = 'Loaded from saved request';
+        }
+
+        // Show delete button
+        document.getElementById('deleteBtn').style.display = 'block';
+
+        // Highlight active request
+        document.querySelectorAll('.request-item').forEach(el => el.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+
+    } catch (error) {
+        alert('Failed to load request: ' + error.message);
+    }
+}
+
+function createNewCollection() {
+    const name = prompt('Enter collection name:');
+    if (!name) return;
+    currentCollection = name;
+    alert('Collection "' + name + '" will be created when you save your first request to it.');
+}
+
+async function saveRequest() {
+    const name = document.getElementById('requestName').value.trim();
+    if (!name || name === 'Untitled Request') {
+        alert('Please enter a request name before saving');
+        return;
+    }
+
+    let collection = currentCollection;
+    if (!collection) {
+        collection = prompt('Enter collection name:', 'Default');
+        if (!collection) return;
+    }
+
+    const method = document.getElementById('httpMethod').value;
+    const url = document.getElementById('requestUrl').value.trim();
+
+    // Build parameters
+    const parameters = {};
+    document.querySelectorAll('#paramsTable tr').forEach(row => {
+        const inputs = row.querySelectorAll('input');
+        const key = inputs[0]?.value.trim();
+        const value = inputs[1]?.value.trim();
+        if (key && value) {
+            parameters[key] = value;
+        }
+    });
+
+    // Build headers
+    const headers = {};
+    document.querySelectorAll('#headersTable tr').forEach(row => {
+        const inputs = row.querySelectorAll('input');
+        const key = inputs[0]?.value.trim();
+        const value = inputs[1]?.value.trim();
+        if (key && value) {
+            headers[key] = value;
+        }
+    });
+
+    const body = document.getElementById('requestBody').value.trim();
+
+    const requestData = {
+        collection: collection,
+        name: name,
+        method: method,
+        url: url,
+        headers: headers,
+        parameters: parameters,
+        body: body,
+        tlsCert: tlsCertContent || '',
+        tlsKey: tlsKeyContent || ''
+    };
+
+    try {
+        const response = await fetch('/api/rest/save', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(requestData)
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+            alert('Request saved successfully!');
+            currentCollection = collection;
+            currentRequest = name;
+            await loadCollections();
+            document.getElementById('deleteBtn').style.display = 'block';
+        } else {
+            alert('Failed to save request: ' + (result.message || 'Unknown error'));
+        }
+    } catch (error) {
+        alert('Failed to save request: ' + error.message);
+    }
+}
+
+async function deleteCurrentRequest() {
+    const name = document.getElementById('requestName').value.trim();
+    if (!name || name === 'Untitled Request' || !currentCollection) {
+        return;
+    }
+
+    if (!confirm('Are you sure you want to delete "' + name + '"?')) {
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/rest/delete', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ collection: currentCollection, name: name })
+        });
+
+        if (response.ok) {
+            alert('Request deleted successfully!');
+            await loadCollections();
+            document.getElementById('requestName').value = 'Untitled Request';
+            document.getElementById('deleteBtn').style.display = 'none';
+            currentCollection = '';
+            currentRequest = '';
+        } else {
+            alert('Failed to delete request');
+        }
+    } catch (error) {
+        alert('Failed to delete request: ' + error.message);
+    }
+}
+
+// Load collections when page loads
+document.addEventListener('DOMContentLoaded', loadCollections);
 
 async function sendRequest() {
     const method = document.getElementById('httpMethod').value;

@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"time"
 
+	"cloudevents-explorer/internal/config"
 	"cloudevents-explorer/internal/templates"
 )
 
@@ -175,4 +176,120 @@ func sendRestError(w http.ResponseWriter, message string, statusCode int) {
 		StatusCode: statusCode,
 		Error:      message,
 	})
+}
+
+// HandleSaveRequest saves a REST request to a collection
+func HandleSaveRequest(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req struct {
+		Collection string                 `json:"collection"`
+		Name       string                 `json:"name"`
+		Method     string                 `json:"method"`
+		URL        string                 `json:"url"`
+		Headers    map[string]string      `json:"headers"`
+		Parameters map[string]string      `json:"parameters"`
+		Body       string                 `json:"body"`
+		TLSCert    string                 `json:"tlsCert"`
+		TLSKey     string                 `json:"tlsKey"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if req.Name == "" {
+		http.Error(w, "Request name is required", http.StatusBadRequest)
+		return
+	}
+
+	if req.Collection == "" {
+		req.Collection = "Default"
+	}
+
+	savedReq := config.SavedRequest{
+		Name:       req.Name,
+		Method:     req.Method,
+		URL:        req.URL,
+		Headers:    req.Headers,
+		Parameters: req.Parameters,
+		Body:       req.Body,
+		TLSCert:    req.TLSCert,
+		TLSKey:     req.TLSKey,
+	}
+
+	if err := config.SaveRequestToCollection(req.Collection, savedReq); err != nil {
+		http.Error(w, "Failed to save request: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"status": "success", "message": "Request saved successfully"})
+}
+
+// HandleGetCollections returns all request collections
+func HandleGetCollections(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	collections := config.GetRequestCollections()
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(collections)
+}
+
+// HandleDeleteRequest deletes a saved request from a collection
+func HandleDeleteRequest(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodDelete {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req struct {
+		Collection string `json:"collection"`
+		Name       string `json:"name"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if err := config.DeleteRequestFromCollection(req.Collection, req.Name); err != nil {
+		http.Error(w, "Failed to delete request: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"status": "success", "message": "Request deleted successfully"})
+}
+
+// HandleDeleteCollection deletes an entire collection
+func HandleDeleteCollection(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodDelete {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req struct {
+		Name string `json:"name"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if err := config.DeleteCollection(req.Name); err != nil {
+		http.Error(w, "Failed to delete collection: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"status": "success", "message": "Collection deleted successfully"})
 }

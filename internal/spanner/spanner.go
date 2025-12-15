@@ -241,20 +241,38 @@ func ExecuteQuery(req types.QueryRequest) types.QueryResponse {
 			columns = row.ColumnNames()
 		}
 
-		// Convert row to map - use string representation for all values
+		// Convert row to map - decode each column to its native type
 		rowMap := make(map[string]interface{})
 
 		for i, col := range columns {
-			// Use GenericColumnValue and convert to string for display
-			var val spanner.GenericColumnValue
+			var val spanner.NullString
 			if err := row.Column(i, &val); err != nil {
-				rowMap[col] = fmt.Sprintf("Error: %v", err)
+				// If string decode fails, try other types
+				var intVal spanner.NullInt64
+				if err := row.Column(i, &intVal); err == nil && intVal.Valid {
+					rowMap[col] = intVal.Int64
+					continue
+				}
+				var floatVal spanner.NullFloat64
+				if err := row.Column(i, &floatVal); err == nil && floatVal.Valid {
+					rowMap[col] = floatVal.Float64
+					continue
+				}
+				var boolVal spanner.NullBool
+				if err := row.Column(i, &boolVal); err == nil && boolVal.Valid {
+					rowMap[col] = boolVal.Bool
+					continue
+				}
+				// If all else fails, store the error
+				rowMap[col] = fmt.Sprintf("decode error: %v", err)
 				continue
 			}
 
-			// Convert value to string for JSON serialization
-			// This handles all Spanner types (STRING, INT64, FLOAT64, BOOL, BYTES, etc.)
-			rowMap[col] = fmt.Sprintf("%v", val.Value)
+			if val.Valid {
+				rowMap[col] = val.StringVal
+			} else {
+				rowMap[col] = nil
+			}
 		}
 
 		rows = append(rows, rowMap)

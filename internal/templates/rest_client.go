@@ -445,21 +445,21 @@ async function loadCollections() {
         collections.forEach(coll => {
             const collDiv = document.createElement('div');
             collDiv.className = 'collection';
-            collDiv.innerHTML = \`
-                <div class="collection-header" onclick="toggleCollection('\${coll.name}')">
-                    <span class="collection-icon" id="icon-\${coll.name}">▶</span>
-                    <span>\${coll.name}</span>
-                    <span style="margin-left: auto; font-size: 11px; color: #5f6368;">(\${coll.requests.length})</span>
+            collDiv.innerHTML = ` + "`" + `
+                <div class="collection-header" onclick="toggleCollection('` + "${" + `coll.name}')">
+                    <span class="collection-icon" id="icon-` + "${" + `coll.name}">▶</span>
+                    <span>` + "${" + `coll.name}</span>
+                    <span style="margin-left: auto; font-size: 11px; color: #5f6368;">(` + "${" + `coll.requests.length})</span>
                 </div>
-                <div class="collection-requests" id="coll-\${coll.name}">
-                    \${coll.requests.map(req => \`
-                        <div class="request-item" onclick="loadRequest('\${coll.name}', '\${req.name}')">
-                            <span class="request-method \${req.method}">\${req.method}</span>
-                            <span>\${req.name}</span>
+                <div class="collection-requests" id="coll-` + "${" + `coll.name}">
+                    ` + "${" + `coll.requests.map(req => ` + "`" + `
+                        <div class="request-item" onclick="loadRequest('` + "${" + `coll.name}', '` + "${" + `req.name}')">
+                            <span class="request-method ` + "${" + `req.method}">` + "${" + `req.method}</span>
+                            <span>` + "${" + `req.name}</span>
                         </div>
-                    \`).join('')}
+                    ` + "`" + `).join('')}
                 </div>
-            \`;
+            ` + "`" + `;
             container.appendChild(collDiv);
         });
     } catch (error) {

@@ -246,6 +246,10 @@ const ConfigEditor = `<!DOCTYPE html>
                 <span class="sidebar-item-icon">🗄️</span>
                 <span>Spanner Database</span>
             </div>
+            <div class="sidebar-item" onclick="switchTab('gcs')" id="tab-gcs">
+                <span class="sidebar-item-icon">☁️</span>
+                <span>GCS Storage</span>
+            </div>
         </div>
 
         <div class="content-panel">
@@ -351,11 +355,38 @@ const ConfigEditor = `<!DOCTYPE html>
                 </div>
             </div>
         </div>
+
+        <!-- GCS Configs -->
+        <div class="section" id="section-gcs">
+            <div class="section-header">
+                <div class="section-title">GCS Storage Configurations</div>
+                <button class="add-btn" onclick="showNewConfigForm('gcs')">+ Add New</button>
+            </div>
+            <div id="gcsConfigs"></div>
+            <div id="newGCSForm" class="new-config-form">
+                <div class="form-group">
+                    <label class="form-label">Configuration Name</label>
+                    <input type="text" class="form-input" id="newGCSName" placeholder="e.g., TMS GCS Local">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Emulator Host</label>
+                    <input type="text" class="form-input" id="newGCSHost" placeholder="e.g., localhost:4443">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Project ID</label>
+                    <input type="text" class="form-input" id="newGCSProject" placeholder="e.g., tms-suncorp-local">
+                </div>
+                <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                    <button class="cancel-btn" onclick="hideNewConfigForm('gcs')">Cancel</button>
+                    <button class="save-btn" onclick="saveNewGCSConfig()">Save Configuration</button>
+                </div>
+            </div>
+        </div>
         </div>
     </div>
 
     <script>
-        let configs = { pubsubConfigs: [], kafkaConfigs: [], spannerConfigs: [] };
+        let configs = { pubsubConfigs: [], kafkaConfigs: [], spannerConfigs: [], gcsConfigs: [] };
 
         function switchTab(tabName) {
             // Remove active from all tabs
@@ -377,6 +408,7 @@ const ConfigEditor = `<!DOCTYPE html>
             renderPubSubConfigs();
             renderKafkaConfigs();
             renderSpannerConfigs();
+            renderGCSConfigs();
         }
 
         function renderPubSubConfigs() {
@@ -711,6 +743,90 @@ const ConfigEditor = `<!DOCTYPE html>
             await saveConfigs();
             hideNewConfigForm('spanner');
             showSuccess('New Spanner configuration added successfully!');
+        }
+
+        function renderGCSConfigs() {
+            const container = document.getElementById('gcsConfigs');
+            if (!configs.gcsConfigs) configs.gcsConfigs = [];
+            container.innerHTML = configs.gcsConfigs.map((config, index) => ` + "`" + `
+                <div class="config-item" id="gcs-${index}">
+                    <div class="config-item-header">
+                        <div class="config-name">${config.name}</div>
+                        <div class="config-actions">
+                            <button class="edit-btn" onclick="editGCSConfig(${index})">Edit</button>
+                            <button class="delete-btn" onclick="deleteGCSConfig(${index})">Delete</button>
+                        </div>
+                    </div>
+                    <div class="config-details" id="gcs-details-${index}">
+                        <div><strong>Emulator Host:</strong> ${config.emulatorHost}</div>
+                        <div><strong>Project ID:</strong> ${config.projectId}</div>
+                    </div>
+                    <div class="hidden" id="gcs-form-${index}">
+                        <div class="form-group">
+                            <label class="form-label">Configuration Name</label>
+                            <input type="text" class="form-input" id="edit-gcs-name-${index}" value="${config.name}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Emulator Host</label>
+                            <input type="text" class="form-input" id="edit-gcs-host-${index}" value="${config.emulatorHost}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Project ID</label>
+                            <input type="text" class="form-input" id="edit-gcs-project-${index}" value="${config.projectId}">
+                        </div>
+                        <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                            <button class="cancel-btn" onclick="cancelEditGCS(${index})">Cancel</button>
+                            <button class="save-btn" onclick="saveGCSConfig(${index})">Save</button>
+                        </div>
+                    </div>
+                </div>
+            ` + "`" + `).join('');
+        }
+
+        function editGCSConfig(index) {
+            document.getElementById('gcs-details-' + index).classList.add('hidden');
+            document.getElementById('gcs-form-' + index).classList.remove('hidden');
+        }
+
+        function cancelEditGCS(index) {
+            document.getElementById('gcs-details-' + index).classList.remove('hidden');
+            document.getElementById('gcs-form-' + index).classList.add('hidden');
+        }
+
+        async function saveGCSConfig(index) {
+            configs.gcsConfigs[index] = {
+                name: document.getElementById('edit-gcs-name-' + index).value,
+                emulatorHost: document.getElementById('edit-gcs-host-' + index).value,
+                projectId: document.getElementById('edit-gcs-project-' + index).value
+            };
+            await saveConfigs();
+            showSuccess('GCS configuration updated successfully!');
+        }
+
+        async function deleteGCSConfig(index) {
+            if (confirm('Are you sure you want to delete this GCS configuration?')) {
+                configs.gcsConfigs.splice(index, 1);
+                await saveConfigs();
+                showSuccess('GCS configuration deleted successfully!');
+            }
+        }
+
+        async function saveNewGCSConfig() {
+            const newConfig = {
+                name: document.getElementById('newGCSName').value,
+                emulatorHost: document.getElementById('newGCSHost').value,
+                projectId: document.getElementById('newGCSProject').value
+            };
+
+            if (!newConfig.name || !newConfig.emulatorHost || !newConfig.projectId) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            configs.gcsConfigs.push(newConfig);
+            await saveConfigs();
+            hideNewConfigForm('gcs');
+            showSuccess('New GCS configuration added successfully!');
         }
 
         async function saveConfigs() {

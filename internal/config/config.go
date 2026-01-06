@@ -31,6 +31,12 @@ type SpannerConfig struct {
 	DatabaseID   string `json:"databaseId"`
 }
 
+type GCSConfig struct {
+	Name         string `json:"name"`
+	EmulatorHost string `json:"emulatorHost"`
+	ProjectID    string `json:"projectId"`
+}
+
 type SavedRequest struct {
 	Name       string                 `json:"name"`
 	Method     string                 `json:"method"`
@@ -51,6 +57,7 @@ type Config struct {
 	PubSubConfigs       []PubSubConfig       `json:"pubsubConfigs"`
 	KafkaConfigs        []KafkaConfig        `json:"kafkaConfigs"`
 	SpannerConfigs      []SpannerConfig      `json:"spannerConfigs"`
+	GCSConfigs          []GCSConfig          `json:"gcsConfigs,omitempty"`
 	RequestCollections  []RequestCollection  `json:"requestCollections,omitempty"`
 }
 

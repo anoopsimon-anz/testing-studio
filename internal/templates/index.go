@@ -271,6 +271,12 @@ const Index = `<!DOCTYPE html>
                 <div class="option-desc" id="descSpanner">Browse tables, run SQL queries, test local Spanner emulator</div>
                 <span class="badge" id="badgeSpanner">Database</span>
             </a>
+
+            <a href="/flimflam-explorer" class="option-card" id="cardFlimFlam">
+                <div class="option-title" id="titleFlimFlam">FlimFlam Explorer</div>
+                <div class="option-desc" id="descFlimFlam">Test FlimFlam mock APIs (REST & gRPC) running on localhost:9999</div>
+                <span class="badge" id="badgeFlimFlam">Mock APIs</span>
+            </a>
         </div>
     </div>
 

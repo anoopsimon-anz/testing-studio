@@ -24,6 +24,7 @@ func main() {
 	http.HandleFunc("/trace-journey", handlers.HandleTraceJourney)
 	http.HandleFunc("/spanner", handlers.HandleSpanner)
 	http.HandleFunc("/config-editor", handlers.HandleConfigEditor)
+	http.HandleFunc("/flimflam-explorer", handlers.FlimFlamExplorerHandler)
 
 	// Register API handlers
 	http.HandleFunc("/api/configs", handlers.HandleGetConfigs)
@@ -50,6 +51,9 @@ func main() {
 	http.HandleFunc("/api/spanner/query", handlers.HandleSpannerQuery)
 	http.HandleFunc("/api/spanner/configs", handlers.HandleSaveSpannerConfig)
 	http.HandleFunc("/api/spanner/schema", handlers.HandleSpannerSchema)
+	http.HandleFunc("/api/flimflam/apis", handlers.FlimFlamAPIsHandler)
+	http.HandleFunc("/api/flimflam/send", handlers.FlimFlamProxyHandler)
+	http.HandleFunc("/api/flimflam/status", handlers.FlimFlamStatusHandler)
 
 	port := "8888"
 	log.Printf("🚀 Testing Studio starting on http://localhost:%s", port)
